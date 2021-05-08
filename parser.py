@@ -2,48 +2,64 @@ from command import Command
 
 
 class Parser:
-    _control_chars = ['O', 'o', 'I', 'i', 'U', 'u', '\n', ';', ',', '!']
-    _notes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-    _question_mark = ['?']
-    _space_bar = [' ']
+    _change_instrument_symbols = [
+        'O', 'o', 'I', 'i', 'U', 'u', '\n', ';', ',', '!']
+    _notes_symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+    _increase_an_octave_symbol = ['?']
+    _double_volume_symbol = [' ']
+    _character_to_instrument_id = {
+        'o': 7,
+        'i': 7,
+        'u': 7,
+        '\n': 15,
+        ';': 76,
+        ',': 20,
+        '!': 114
+    }
 
     def parse(self, character):
-        if character in self._control_chars or character.isdigit():
-            return self._parse_control_char(character)
-        elif character in self._notes:
-            return self._parse_note_char(character)
-        elif character in self._question_mark:
-            return self._parse_question_mark()
-        elif character in self._space_bar:
-            return self._parse_space_bar()
+        if character.isdigit():
+            return self._parse_add_offset_to_current_instrument_symbol(caracter)
+        if character in self._change_instrument_symbols:
+            return self._parse_change_instrument_symbol(character)
+        elif character in self._notes_symbols:
+            return self._parse_note_symbol(character)
+        elif character in self._increase_an_octave_symbol:
+            return self._parse_increase_an_octave_symbol()
+        elif character in self._double_volume_symbol:
+            return self._parse_double_volume_symbol()
         else:
-            return self._parse_other_char(character)
+            return self._parse_repeat_or_pause_symbol()
 
-    def _parse_control_char(self, character):
-        command = Command.control
-        self._set_command_symbol(command, character)
+    def _parse_add_offset_to_current_instrument_symbol(self, offset):
+        return Command.add_offset_to_current_instrument(offset)
+
+    def _parse_change_instrument_symbol(self, character):
+        instrument = self._character_to_instrument(character)
+        command = Command.change_instrument
+        self._set_command_data(command, instrument)
+
         return command
 
-    def _parse_note_char(self, character):
-        command = Command.note
-        self._set_command_symbol(command, character)
+    def _parse_note_symbol(self, character):
+        command = Command.play_note
+        self._set_command_data(command, character)
         return command
 
-    def _parse_other_char(self, character):
-        command = Command.other
-        self._set_command_symbol(command, character)
-        return command
+    def _parse_repeat_or_pause_symbol(self):
+        return Command.repeat_or_pause
 
-    def _parse_question_mark(self):
-        command = Command.question_mark
-        return command
+    def _parse_increase_an_octave_symbol(self):
+        return Command.increase_an_octave
 
-    def _parse_space_bar(self):
-        command = Command.space_bar
-        return command
+    def _parse_double_volume_symbol(self):
+        return Command.double_volume
 
-    def _set_command_symbol(self, command, character):
-        command.value.symbol = character
+    def _character_to_instrument(self, character):
+        return self._character_to_instrument_id[character.lower()]
+
+    def _set_command_data(self, command, data):
+        command.value.data = data
 
 
 def debug():
@@ -57,10 +73,11 @@ def debug():
 
     for char in music:
         result = parser.parse(char)
-        if result is not Command.question_mark and result is not Command.space_bar:
-            print(result.name + ' ' + result.value.symbol)
+        if result is not Command.repeat_or_pause and result is not Command.increase_an_octave and result is not Command.double_volume:
+            print(char + '\t' + result.name + ' ' + str(result.value.data))
         else:
-            print(result.name)
+            print(char + '\t' + result.name)
+
 
 if __name__ == '__main__':
     debug()

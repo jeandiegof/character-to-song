@@ -1,33 +1,27 @@
-from enum import Enum
+from enum import Enum, unique
 
 
 class GenericCommand:
-    symbol = None
+    data = None
 
 
-class Control(GenericCommand):
+class ChangeInstrument(GenericCommand):
     pass
 
 
-class Note(GenericCommand):
+class AddOffsetToCurrentInstrument(GenericCommand):
     pass
 
 
-class Other(GenericCommand):
+class PlayNote(GenericCommand):
     pass
 
 
-class QuestionMark:
-    pass
-
-
-class SpaceBar:
-    pass
-
-
+@unique
 class Command(Enum):
-    control = Control()
-    note = Note()
-    question_mark = QuestionMark()
-    space_bar = SpaceBar()
-    other = Other()
+    change_instrument = ChangeInstrument()
+    add_offset_to_current_instrument = AddOffsetToCurrentInstrument()
+    play_note = PlayNote()
+    increase_an_octave = 1
+    double_volume = 2
+    repeat_or_pause = 3
