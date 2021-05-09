@@ -2,10 +2,9 @@ from mingus.midi import fluidsynth
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, generic_midi_sf2_path, audio_driver):
         self.fluidsynth = fluidsynth
-        self.fluidsynth.init(
-            "/home/jeandiego/dev/tcp/GeneralUser_GS_SoftSynth_v144.sf2", "alsa")
+        self.fluidsynth.init(generic_midi_sf2_path, audio_driver)
 
     def play_note(self, note):
         self.fluidsynth.play_Note(note)
@@ -13,7 +12,7 @@ class Player:
     def play_track(self, track):
         self.fluidsynth.play_Track(track)
 
-    def change_instrument(self, general_midi_instrument_id):
+    def set_instrument(self, general_midi_instrument_id):
         self.fluidsynth.set_instrument(1, general_midi_instrument_id)
     
     def set_volume(self, volume):

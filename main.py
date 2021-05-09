@@ -1,22 +1,26 @@
-from player import Player;
-from mingus.containers import Note
+from parser import Parser
+from command_executor import CommandExecutor
+from song_player import SongPlayer
 
 import time
 
 def app():
-    player = Player()
-    i = 0
+    parser = Parser()
+    command_executor = CommandExecutor()
+    music = 'CCAACCAA AA'
 
-    while True:
-        print(i)
-        player.set_volume(i)
-        
-        player.play_note(Note("C-5"))
-        player.play_note(Note("E-5"))
-        time.sleep(1)
-        
-        i = (i + 10) if i < 117 else 0
-        
+    # TODO: change instrument not working. Setting the midi_instr attribute doesn't work.
+
+    for char in music:
+        command = parser.parse(char)
+        command_executor.execute(command)
+
+    song = command_executor.get_resulting_song()
+    for entry in song:
+        print(entry)
+
+    player = SongPlayer(120, "/home/jeandiego/dev/tcp/GeneralUser_GS_SoftSynth_v144.sf2", "alsa")
+    player.play(song)
 
 if __name__ == "__main__":
     app()

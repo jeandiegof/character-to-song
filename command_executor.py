@@ -21,6 +21,7 @@ class CommandExecutor:
         self._last_command = None
 
         self._midi_builder = MidiBuilder()
+        self._song = []
 
     def execute(self, command):
         if command is Command.change_instrument:
@@ -38,8 +39,8 @@ class CommandExecutor:
 
         self._last_command = command
 
-    def get_resulting_track(self):
-        return self._midi_builder.get_track()
+    def get_resulting_song(self):
+        return self._song
 
     def _execute_change_instrument(self, instrument):
         self._change_instrument(instrument)
@@ -53,6 +54,7 @@ class CommandExecutor:
         note = Note(note_str, self._current_octave,
                     velocity=self._current_volume)
         self._midi_builder.append_note(note)
+        self._song.append((note, self._current_instrument))
 
     def _execute_increase_an_octave(self):
         target_octave = self._current_octave + 1
@@ -67,6 +69,7 @@ class CommandExecutor:
             self._execute_play_note(self._last_command.value.data)
         else:
             self._midi_builder.append_rest()
+            self._song.append((None, self._current_instrument))
 
     def _change_instrument(self, new_instrument):
         self._midi_builder.set_instrument(new_instrument)
