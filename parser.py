@@ -19,7 +19,7 @@ class Parser:
 
     def parse(self, character):
         if character.isdigit():
-            return self._parse_add_offset_to_current_instrument_symbol(caracter)
+            return self._parse_add_offset_to_current_instrument_symbol(character)
         if character in self._change_instrument_symbols:
             return self._parse_change_instrument_symbol(character)
         elif character in self._notes_symbols:
@@ -32,13 +32,14 @@ class Parser:
             return self._parse_repeat_or_pause_symbol()
 
     def _parse_add_offset_to_current_instrument_symbol(self, offset):
-        return Command.add_offset_to_current_instrument(offset)
+        command = Command.add_offset_to_current_instrument
+        self._set_command_data(command, int(offset))
+        return command
 
     def _parse_change_instrument_symbol(self, character):
         instrument = self._character_to_instrument(character)
         command = Command.change_instrument
         self._set_command_data(command, instrument)
-
         return command
 
     def _parse_note_symbol(self, character):
