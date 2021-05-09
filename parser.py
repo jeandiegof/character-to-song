@@ -61,24 +61,3 @@ class Parser:
 
     def _set_command_data(self, command, data):
         command.value.data = data
-
-
-def debug():
-    music = ['O', 'o', 'I', 'i', 'U', 'u', '\n', ';', ',', '!']
-    music = music + ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-    music = music + ['?']
-    music = music + [' ']
-    music = music + ['#', '#', '#']
-
-    parser = Parser()
-
-    for char in music:
-        result = parser.parse(char)
-        if result is not Command.repeat_or_pause and result is not Command.increase_an_octave and result is not Command.double_volume:
-            print(char + '\t' + result.name + ' ' + str(result.value.data))
-        else:
-            print(char + '\t' + result.name)
-
-
-if __name__ == '__main__':
-    debug()
