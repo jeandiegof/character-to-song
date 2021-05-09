@@ -14,6 +14,6 @@ class Player:
 
     def set_instrument(self, general_midi_instrument_id):
         self.fluidsynth.set_instrument(1, general_midi_instrument_id)
-    
+
     def set_volume(self, volume):
         self.fluidsynth.main_volume(1, volume)

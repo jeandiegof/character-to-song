@@ -2,17 +2,19 @@ from parser import Parser
 from song_builder import SongBuilder
 from song_player import SongPlayer
 
+
 class App():
     def __init__(self, generic_midi_sf2_path, audio_driver):
         self._parser = Parser()
         self._song_builder = SongBuilder()
-        self._song_player = SongPlayer(120, generic_midi_sf2_path, audio_driver)
+        self._song_player = SongPlayer(
+            120, generic_midi_sf2_path, audio_driver)
 
     def run(self):
         example_song = 'CCC CCCAACCAAaa!AA'
         self._play(example_song)
         self._export_midi_file('/home/jeandiego/dev/tcp/output.mid')
-    
+
     def _play(self, song_string):
         for character in song_string:
             command = self._parser.parse(character)
