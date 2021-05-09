@@ -42,6 +42,9 @@ class SongBuilder:
     def get_resulting_song(self):
         return self._song
 
+    def save_midi_to_file(self, path):
+        self._midi_builder.save_midi_to_file(path)
+
     def _execute_change_instrument(self, instrument):
         self._change_instrument(instrument)
 

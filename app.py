@@ -11,6 +11,7 @@ class App():
     def run(self):
         example_song = 'CCC CCCAACCAAaa!AA'
         self._play(example_song)
+        self._export_midi_file('/home/jeandiego/dev/tcp/output.mid')
     
     def _play(self, song_string):
         for character in song_string:
@@ -21,4 +22,4 @@ class App():
         self._song_player.play(resulting_song)
 
     def _export_midi_file(self, path):
-        pass
+        self._song_builder.save_midi_to_file(path)

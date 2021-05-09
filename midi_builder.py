@@ -1,5 +1,6 @@
 from mingus.containers.instrument import MidiInstrument
 from mingus.containers import Bar, Track
+from mingus.midi import midi_file_out
 
 class MidiBuilder:
     def __init__(self):
@@ -29,6 +30,5 @@ class MidiBuilder:
         self._track = self._track + self._bar
         self._bar = Bar()
 
-    # Are we missing the last samples?
     def save_midi_to_file(self, path):
-        pass
+        midi_file_out.write_Track(path, self.get_track(), bpm=120, repeat=0, verbose=False)
