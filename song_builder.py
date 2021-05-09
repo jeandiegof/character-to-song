@@ -5,7 +5,7 @@ from player import Player
 from mingus.containers import Note
 
 
-class CommandExecutor:
+class SongBuilder:
     MAXIMUM_VOLUME = 127
     MAXIMUM_VALID_INSTRUMENT = 128
     MAXIMUM_OCTAVE = 7
