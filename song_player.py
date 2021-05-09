@@ -11,7 +11,7 @@ class SongPlayer(Player):
         self._bpm = bpm
 
     def play(self, song):
-        for (note, instrument) in song:
+        for (note, instrument) in song.notes():
             if note is not None:
                 self.set_instrument(instrument)
                 self.play_note(note)

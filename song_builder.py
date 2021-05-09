@@ -1,6 +1,7 @@
 from command import Command
 from midi_builder import MidiBuilder
 from player import Player
+from song import Song
 
 from mingus.containers import Note
 
@@ -21,7 +22,7 @@ class SongBuilder:
         self._last_command = None
 
         self._midi_builder = MidiBuilder()
-        self._song = []
+        self._song = Song()
 
     def execute(self, command):
         if command is Command.change_instrument:
@@ -57,7 +58,7 @@ class SongBuilder:
         note = Note(note_str, self._current_octave,
                     velocity=self._current_volume)
         self._midi_builder.append_note(note)
-        self._song.append((note, self._current_instrument))
+        self._song.append(note, self._current_instrument)
 
     def _execute_increase_an_octave(self):
         target_octave = self._current_octave + 1
@@ -72,7 +73,7 @@ class SongBuilder:
             self._execute_play_note(self._last_command.value.data)
         else:
             self._midi_builder.append_rest()
-            self._song.append((None, self._current_instrument))
+            self._song.append(None, self._current_instrument)
 
     def _change_instrument(self, new_instrument):
         self._midi_builder.set_instrument(new_instrument)
