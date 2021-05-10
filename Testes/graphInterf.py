@@ -63,9 +63,9 @@ class GraphInterf:
         self.window.Close()
 
 #TESTES
-def printzin(event, values):
-    print('oi')
-
-teste = GraphInterf(callback = printzin)
-teste.event_loop()
+#def printzin(event, values):
+#    print('oi')
+#
+#teste = GraphInterf(callback = printzin)
+#teste.event_loop()
 
