@@ -3,34 +3,19 @@ import os.path
 
 class Layouts:
 
-    def startWindow(self):
-        layout = [
-            [gui.Text('Software de Tradução Texto-Musical', font = ("Arial",20))],
-            [gui.Text('Selecione uma das opções abaixo:')],
-            [gui.Button('Abrir um arquivo de texto'), gui.Button('Digitar um texto')]
+        mainWindow = [
+            [gui.Text('Musical Translation Software', font = ("Arial",20))],
+            [gui.Text('Open file:', size = (20,1)), gui.FileBrowse(file_types=(("Text Files", "*.txt"),), target = 'addressOutput', size = (21,1), )],
+            [gui.Text('', visible = False, key = 'addressOutput', enable_events = True)],
+            [gui.Text('User input:', size = (20,1)), gui.Multiline('', size=(22,5), key = 'textInput')],
+            [gui.Text('Status:', size = (21,1)), gui.Text('Waiting', key = 'statusOutput')],
+            [gui.Button('Play', size = (20,1)), gui.Button('Quit', size = (20,1))]
         ]
-        return layout
-
-    def browserWindow(self):
-        layout = [
-            [gui.Text('Digite o diretório do arquivo')],
-            [gui.Input(key = 'address')],
-            [gui.Button('Voltar'), gui.Button('Avançar')]
-        ]
-        return layout
-
-    def textWindow(self, input = ''): 
-        layout = [
-            [gui.Text('Digite ou complemente o texto abaixo')],
-            [gui.Multiline(input, size=(60,30), key = 'textInput')],
-            [gui.Button('Voltar'), gui.Button('Tradução musical')]
-        ]
-        return layout
 
 class WindowManager:
 
     def createWindow(self, layout):
-        return gui.Window('Conversor Musical', layout = layout, finalize=True)
+        return gui.Window('Musical Translation Software', element_justification='center', layout = layout, finalize=True)
 
     def swapActiveWindow(self, oldWindow, newWindow):
         self.hideWindow(oldWindow)
@@ -44,58 +29,38 @@ class WindowManager:
 
 class GraphInterf:
 
-    def __init__(self):
-        pass
+    def __init__(self, callback):
+        self.manager = WindowManager()
+        self.window = self.manager.createWindow(Layouts.mainWindow)
+        self._callback = callback
 
-#Testes temporários
-manager = WindowManager()
-layouts = Layouts()
+    def event_loop(self):
+        while True:
+            self.window, self.event, self.values = gui.read_all_windows()
 
-startWindow = manager.createWindow(layouts.startWindow())
-browserWindow, textWindow, textWindow2 = None, None, None
+            print(self.event)
 
-while True:
+            if self.event == gui.WIN_CLOSED or self.event == 'Quit':
+                self._callback(self.event,self.values)
+                break
 
-    window, event, values = gui.read_all_windows()
-    if event == gui.WIN_CLOSED:
-        break
+            elif self.event == 'Browse':
+                if os.path.isfile(self.values['addressOutput']):
+                    file = open(self.values['addressOutput'], 'r')
+                    text = file.read()
+                    window.Element['textInput'].Update(text)
+                    self._callback(self.event, self.values)
+                else:
+                    window.Element['textInput'].Update('Please, select a valid address.')
 
-    elif window == startWindow:
-        if event == 'Abrir um arquivo de texto':
-            browserWindow = manager.createWindow(layouts.browserWindow())
-            manager.hideWindow(startWindow)
+            elif self.event == 'Play':
+                self._callback(self.event,self.values)
+                self.window.Element('statusOutput').Update('Playing')
+        self.window.Close()
 
-        elif event == 'Digitar um texto':
-            textWindow = manager.createWindow(layouts.textWindow())
-            manager.hideWindow(startWindow)
+def printzin(event, values):
+    print('oi')
 
-    elif window == browserWindow:
-        if event == 'Voltar':
-            manager.swapActiveWindow(browserWindow, startWindow)
-            
-        elif event == 'Avançar':
-            #verifica a existência do diretório e do arquivo
-            if(os.path.isfile(values['address'])):
-                file = open(values['address'], 'r')
-                text = file.read()
-                textWindow2 = manager.createWindow(layouts.textWindow(text))
-                manager.hideWindow(browserWindow)
-            else:
-                textWindow2 = manager.createWindow(layouts.textWindow('Não foi possível abrir o arquivo.'))
-                manager.hideWindow(browserWindow)
+teste = GraphInterf(callback = printzin)
+teste.event_loop()
 
-    elif window == textWindow:
-        if event == 'Voltar':
-            manager.swapActiveWindow(textWindow, startWindow)
-
-        elif event == 'Tradução musical':
-            #chama a função do jean, enviando o texto como parâmetro
-            manager.hideWindow(textWindow)
-
-    elif window == textWindow2:
-        if event == 'Voltar':
-            manager.swapActiveWindow(textWindow2, startWindow)
-
-        elif event == 'Tradução musical':
-            #chama a função do jean, enviando o texto como parâmetro
-            manager.hideWindow(textWindow2)
