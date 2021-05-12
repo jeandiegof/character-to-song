@@ -1,10 +1,12 @@
 import PySimpleGUI as gui
 import os.path
 
+import threading
+
 
 class MainWindow:
     def __init__(self, callback):
-        self._currentStatus = 'waiting'
+        self._current_status = 'waiting'
         self._callback = callback
         self._layout = [
             [gui.Text('Musical Translation Software', font=("Arial", 20))],
@@ -18,35 +20,39 @@ class MainWindow:
             [gui.Button('Play | Stop', size=(20, 1)),
              gui.Button('Quit', size=(20, 1))]
         ]
-        self._window = self.createWindow()
+        self._window = None
 
-    def createWindow(self):
+    def create_window(self):
         return gui.Window('Musical Translation Software', element_justification='center', layout=self._layout, finalize=True)
 
-    def event_loop(self):
+    def run(self):
+        self._window = self.create_window()
+
         while True:
-            self._window, self.event, self.values = gui.read_all_windows()
+            self._window, event, values = gui.read_all_windows()
 
-            if self.event == gui.WIN_CLOSED or self.event == 'Quit':
-                self._callback(self.event, self.values)
+            if event == gui.WIN_CLOSED or event == 'Quit':
                 break
+            elif event == 'FileAddress':
+                filename = values['FileAddress']
 
-            elif self.event == 'FileAddress':
-                if os.path.isfile(self.values['FileAddress']):
-                    file = open(self.values['FileAddress'], 'r')
-                    text = file.read()
-                    self._window.Element('textInput').Update(text)
-                    self._callback(self.event, self.values)
+                if os.path.isfile(filename):
+                    file = open(filename, 'r')
+                    self._update_text_input_element(file.read())
                 else:
-                    self._window.Element('textInput').Update(
+                    self._update_text_input_element(
                         'Please, select a valid address.')
+            elif event == 'Play | Stop':
+                song = values['textInput']
+                threading.Thread(target=self._callback, args=(song,)).start()
 
-            elif self.event == 'Play | Stop':
-                self._callback(self.event, self.values)
-                if (self._currentStatus == 'waiting'):
-                    self._currentStatus = 'playing'
-                    self._window.Element('statusOutput').Update('Playing')
-                else:
-                    self._currentStatus = 'waiting'
-                    self._window.Element('statusOutput').Update('Waiting')
         self._window.Close()
+
+    def update_status_output_element(self, value):
+        self._update_element('statusOutput', value)
+
+    def _update_text_input_element(self, value):
+        self._update_element('textInput', value)
+
+    def _update_element(self, name, value):
+        self._window.Element(name).Update(value)
